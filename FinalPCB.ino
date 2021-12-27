@@ -177,7 +177,7 @@ void loop() {
         cm = us();
         //début de la séquence de détection de bouteille après évitement
         while (bfind == false) { //tant que le robot ne détecte pas la prochaine bouteille
-          while (cm > 40 && rota < 50) {//tant qu'il ne détecte pas la bouteille à moins de 60 cm et qu'il a tourné de moins d'environ 120 degrés
+          while (cm > 40 && rota < 50) {//tant qu'il ne détecte pas la bouteille à moins de 40 cm et qu'il a tourné de moins d'environ 120 degrés
             if (sensrota) {
               gr();
               delay(65);
