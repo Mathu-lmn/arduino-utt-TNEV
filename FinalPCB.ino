@@ -7,10 +7,13 @@ const int cp4 = 7;
 const int enablePin = 3;
 const int enablePin2 = 6;
 
+//interrupteurs
 
 int etatinterrupteur = LOW; //interrupteur pour avancer
 int etatinterrupteur2 = LOW; //interrupteur pour le lanceur
 int avant = 1;
+
+//variables pour la boucle de détection de bouteille après évitement
 
 bool sensrota = true; // sens de rota (true = gauche)
 int rota = 0; //rotation du moteur
@@ -18,12 +21,14 @@ bool bfind = false; //Détermine si la bouteille est en vue
 int var = 1; //Paire ou impaire en évitant les bouteilles
 
 //Ultrason
+
 int trig = A4;
 int echo = A3;
 long lecture_echo;
 long cm;
 
 //lanceur
+
 int angle;
 int switchstate;
 const int sp = 13;
@@ -43,13 +48,13 @@ void setup() {
   pinMode(sp, INPUT);
   pinMode(A0, INPUT);
 }
-void stopp() { //arrêt
+void stopp() { //arrêt des roues
   digitalWrite(cp1, LOW);
   digitalWrite(cp2, LOW);
   digitalWrite(cp3, LOW);
   digitalWrite(cp4, LOW);
 }
-void av() { //avancer
+void av() { //avancer tout droit
   digitalWrite(cp1, HIGH);
   digitalWrite(cp2, LOW);
   digitalWrite(cp3, LOW);
@@ -68,7 +73,7 @@ void gr() { //tourner a droite
   digitalWrite(cp4, HIGH);
 }
 
-long us() { //distance ultrason
+long us() { //distance de l'obstacle par ultrason
   long cm;
   digitalWrite(trig, HIGH);
   delayMicroseconds(10);
@@ -77,16 +82,9 @@ long us() { //distance ultrason
   cm = lecture_echo / 58;
   return cm;
 }
-void uss() { //distance ultrason
-  digitalWrite(trig, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trig, LOW);
-  lecture_echo = pulseIn(echo, HIGH);
-  cm = lecture_echo / 58;
-}
 void loop() {
   analogWrite(enablePin, 225);
-  analogWrite(enablePin2, 225);
+  analogWrite(enablePin2, 225);//les roues ne vont pas a la vitesse max
   cm = us();
   etatinterrupteur = digitalRead(A0);
   if (etatinterrupteur == HIGH) {
@@ -97,6 +95,7 @@ void loop() {
       if (var % 2 == 0) { //variable qui détermine si le robot évite à gauche de la bouteille
         stopp();
         delay(500);
+        //début de la séquence d'évitement
         gl();
         delay(775);
         sensrota = true; //définir sensrota comme true pour le balayage par la suite
@@ -118,8 +117,9 @@ void loop() {
         stopp();
         delay(500);
         cm = us();
+        //début de la séquence de détection de bouteille après évitement
         while (bfind == false) { //tant que le robot ne détecte pas la prochaine bouteille
-          while (cm > 40 && rota < 50) { //tant qu'il ne détecte pas la bouteille à moins de 60 cm et qu'il a tourné de moins d'environ 120 degrés
+          while (cm > 40 && rota < 50) { //tant qu'il ne détecte pas la bouteille à moins de 40 cm et qu'il a tourné de moins d'environ 120 degrés
             if (sensrota) {
               gl();
               delay(65);
@@ -134,10 +134,10 @@ void loop() {
             cm = us();
           }
           rota = 0; //reset de la rotation
-          sensrota = !sensrota; //changement de sens de rotation = balayage
+          sensrota = !sensrota; //changement de sens de rotation quand les 120° sont atteints
           if (cm < 40) { //si bouteille détectée
             bfind = true;
-            if (sensrota) {
+            if (sensrota) {//le robot tourne un petit peu pour etre dans le bon axe (compense la portée latérale du capteur)
               gr();
               delay(120);
             }
@@ -153,6 +153,7 @@ void loop() {
       else {
         stopp();
         delay(500);
+        //début de la séquence d'évitement
         gr();
         delay(650);
         sensrota = true; //définir sensrota comme true pour le balayage par la suite
@@ -174,8 +175,9 @@ void loop() {
         stopp();
         delay(500);
         cm = us();
+        //début de la séquence de détection de bouteille après évitement
         while (bfind == false) { //tant que le robot ne détecte pas la prochaine bouteille
-          while (cm > 40 && rota < 50) {//tant qu'il ne détecte pas la bouteille à moins de 60 cm et qu'il a tourné de moins d'environ 120 degrés
+          while (cm > 40 && rota < 50) {//tant qu'il ne détecte pas la bouteille à moins de 40 cm et qu'il a tourné de moins d'environ 120 degrés
             if (sensrota) {
               gr();
               delay(65);
@@ -189,11 +191,11 @@ void loop() {
             delay(75);
             cm = us();
           }
-          rota = 0;//reset de la rotation
-          sensrota = !sensrota; //changement de sens de rotation = balayage
+          rota = 0; //reset de la rotation
+          sensrota = !sensrota; //changement de sens de rotation quand les 120° sont atteints
           if (cm < 40) { //si bouteille détectée
             bfind = true;
-            if (sensrota) {
+            if (sensrota) {//le robot tourne un petit peu pour etre dans le bon axe (compense la portée latérale du capteur)
               gl();
               delay(120);
             }
