@@ -48,7 +48,7 @@ void setup() {
   pinMode(sp, INPUT);
   pinMode(A0, INPUT);
 }
-void stopp() { //arrêt des roues
+void stop() { //arrêt des roues
   digitalWrite(cp1, LOW);
   digitalWrite(cp2, LOW);
   digitalWrite(cp3, LOW);
@@ -60,13 +60,13 @@ void av() { //avancer tout droit
   digitalWrite(cp3, LOW);
   digitalWrite(cp4, HIGH);
 }
-void gl() { //tourner à gauche
+void gl() { //tourner à gauche (go left)
   digitalWrite(cp1, HIGH);
   digitalWrite(cp2, LOW);
   digitalWrite(cp3, HIGH);
   digitalWrite(cp4, LOW);
 }
-void gr() { //tourner a droite
+void gr() { //tourner a droite (go right)
   digitalWrite(cp1, LOW);
   digitalWrite(cp2, HIGH);
   digitalWrite(cp3, LOW);
@@ -79,8 +79,7 @@ long us() { //distance de l'obstacle par ultrason
   delayMicroseconds(10);
   digitalWrite(trig, LOW);
   lecture_echo = pulseIn(echo, HIGH);
-  cm = lecture_echo / 58;
-  return cm;
+  return lecture_echo / 58;
 }
 void loop() {
   analogWrite(enablePin, 225);
@@ -93,7 +92,7 @@ void loop() {
   if (avant == 2) {
     if (cm <= 18) { //si bouteille détectée à moins de 18 cm
       if (var % 2 == 0) { //variable qui détermine si le robot évite à gauche de la bouteille
-        stopp();
+        stop();
         delay(500);
         //début de la séquence d'évitement
         gl();
@@ -102,19 +101,19 @@ void loop() {
         bfind = false; //bouteille n'est plus dans l'axe
         av();
         delay(1300);
-        stopp();
+        stop();
         delay(500);
         gr();
         delay(800);
         av();
         delay(2500);
-        stopp();
+        stop();
         delay(500);
         gr();
         delay(700);
         av();
         delay(1250);
-        stopp();
+        stop();
         delay(500);
         cm = us();
         //début de la séquence de détection de bouteille après évitement
@@ -124,12 +123,12 @@ void loop() {
               gl();
               delay(65);
             }
-            if (sensrota == false) {
+            else if (!sensrota) {
               gr();
               delay(70);
             }
             rota += 1;
-            stopp();
+            stop();
             delay(75);
             cm = us();
           }
@@ -141,7 +140,7 @@ void loop() {
               gr();
               delay(120);
             }
-            else {
+            else if (!sensrota) {
               gl();
               delay(125);
             }
@@ -151,7 +150,7 @@ void loop() {
         var++; //la prochaine bouteille sera évitée de l'autre coté de la bouteille
       }
       else {
-        stopp();
+        stop();
         delay(500);
         //début de la séquence d'évitement
         gr();
@@ -160,19 +159,19 @@ void loop() {
         bfind = false; //bouteille n'est plus dans l'axe
         av();
         delay(1300);
-        stopp();
+        stop();
         delay(500);
         gl();
         delay(675);
         av();
         delay(2500);
-        stopp();
+        stop();
         delay(500);
         gl();
         delay(700);
         av();
         delay(1250);
-        stopp();
+        stop();
         delay(500);
         cm = us();
         //début de la séquence de détection de bouteille après évitement
@@ -182,12 +181,12 @@ void loop() {
               gr();
               delay(65);
             }
-            if (sensrota == false) {
+            else if (!sensrota) {
               gl();
               delay(70);
             }
             rota += 1;
-            stopp();
+            stop();
             delay(75);
             cm = us();
           }
@@ -199,7 +198,7 @@ void loop() {
               gl();
               delay(120);
             }
-            else {
+            else if (!sensrota) {
               gr();
               delay(125);
             }
